@@ -13,11 +13,11 @@ private var stockList = mutableListOf<Stock>()
 
 private val commentList : List<String> = listOf(
     "SPY is going up",
-    "AAPL going down",
+    "AAPL is going down",
     "AMD AMD AMD",
     "buy TSLA",
     "SPY",
-    "SPY ALL THE WAY"
+    "CALLS all the way"
 )
 
 class MainActivity : AppCompatActivity() {
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 else if(comment.contains(' ' + stock.ticker + ' ')) {  // at the middle
                     stock.count++
                 }
-                else if(comment.equals(stock.ticker)) {   // only contains ticker
+                else if(comment == stock.ticker) {   // only contains ticker
                     stock.count++
                 }
             }
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         // for debugging purposes
         var displaytext : String = ""
         for(stuff in leaderboards) {
-            displaytext = displaytext + stuff.ticker + ' ' + stuff.name + ' ' + stuff.count + '\n'
+            displaytext = displaytext + stuff.ticker + ' ' + stuff.count + '\n'
         }
         countText.text = displaytext
 
