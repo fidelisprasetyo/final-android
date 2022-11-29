@@ -3,13 +3,8 @@ package com.bignerdranch.android.finaltest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.util.*
 
 private lateinit var countText: TextView
-
-private var stockList = mutableListOf<Stock>()
 
 private val commentList : List<String> = listOf(
     "SPY is going up",
@@ -21,52 +16,20 @@ private val commentList : List<String> = listOf(
 )
 
 class MainActivity : AppCompatActivity() {
+    private var leaderboard = mutableListOf<Stock>()
+    private var stockList = mutableListOf<Stock>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        countText = findViewById(R.id.count_text)
-
-        // build stock list
-        val csvfile = InputStreamReader(assets.open("us_stocks.csv"))
-        val reader = BufferedReader(csvfile)
-        var line : String?
-        while (reader.readLine().also {line = it} != null) {
-            val row : List<String> = line!!.split(",")
-            val stock = Stock(row[0], row[1])
-            stockList.add(stock)
-        }
-
-        // where the actual counting happens
-        for(comment in commentList) {
-            for(stock in stockList) {
-                if(comment.contains(stock.ticker + ' ')) {  // at the beginning
-                    stock.count++
-                }
-                else if(comment.contains(' ' + stock.ticker)) {  // at the end
-                    stock.count++
-                }
-                else if(comment.contains(' ' + stock.ticker + ' ')) {  // at the middle
-                    stock.count++
-                }
-                else if(comment == stock.ticker) {   // only contains ticker
-                    stock.count++
-                }
-            }
-        }
-
-        // get the top 10
-        val tempList = stockList.toMutableList()
-        var leaderboards = mutableListOf<Stock>()
-        repeat(10) {
-            var topStock = tempList.maxByOrNull{it.count}
-            leaderboards.add(topStock!!)
-            tempList.remove(topStock)
-        }
+        stockList = StockList().getList()
+        leaderboard = StocksLeaderboard(commentList, stockList).getLeaderboard()
 
         // for debugging purposes
+        countText = findViewById(R.id.count_text)
         var displaytext : String = ""
-        for(stuff in leaderboards) {
+        for(stuff in leaderboard) {
             displaytext = displaytext + stuff.ticker + ' ' + stuff.count + '\n'
         }
         countText.text = displaytext
